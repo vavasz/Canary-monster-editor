@@ -19,39 +19,32 @@ namespace Canary_monster_editor
         #region Protobuf load/save
         public static bool LoadStaticDataProbufBinaryFileFromPath(string path)
         {
-            if (GlobalStaticData != null)
-            {
+            if (GlobalStaticData != null) {
                 return false;
             }
 
             using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
                 GlobalStaticData = StaticData.Parser.ParseFrom(fileStream);
 
-            if (GlobalStaticData == null || GlobalStaticData.Monster == null || GlobalStaticData.Monster.Count == 0)
-            {
+            if (GlobalStaticData == null || GlobalStaticData.Monster == null || GlobalStaticData.Monster.Count == 0) {
                 return false;
             }
 
-            // Reinicialize para garantir o valor máximo
             GlobalLastCreatureId = 0;
-
-            foreach (var monster in GlobalStaticData.Monster)
-            {
-                if (monster.Raceid > GlobalLastCreatureId)
-                {
+            foreach (var monster in GlobalStaticData.Monster) {
+                if (monster.Raceid > GlobalLastCreatureId) {
                     GlobalLastCreatureId = monster.Raceid;
                 }
             }
 
-            foreach (var boss in GlobalStaticData.Boss)
-            {
-                if (boss.Id > GlobalLastCreatureId)
-                {
+            GlobalLastCreatureId = 0;
+            foreach (var boss in GlobalStaticData.Boss) {
+                if (boss.Id > GlobalLastCreatureId) {
                     GlobalLastCreatureId = boss.Id;
                 }
 
-                if (boss.AppearanceType != null)
-                {
+                // On 12.90, AppearanceType was implemented on boss objects, so we need to be able do identify it automaticly
+                if (boss.AppearanceType != null) {
                     GlobalBossAppearancesObjects = true;
                 }
             }
@@ -60,11 +53,9 @@ namespace Canary_monster_editor
             GlobalFileLastTimeEdited = File.GetLastWriteTime(path);
             return true;
         }
-
         public static bool SaveStaticDataProtobufBinaryFile()
         {
-            if (string.IsNullOrEmpty(GlobalStaticDataPath) || GlobalStaticData == null)
-            {
+            if (string.IsNullOrEmpty(GlobalStaticDataPath) || GlobalStaticData == null) {
                 return false;
             }
 
